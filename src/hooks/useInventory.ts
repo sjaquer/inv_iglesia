@@ -75,7 +75,8 @@ export function useInventory() {
     quantity: number,
     personName: string,
     conditionOnReturn?: string,
-    origin?: string
+    origin?: string,
+    cost?: number
   ) => {
     if (!db) throw new Error("Base de datos no inicializada");
 
@@ -93,15 +94,16 @@ export function useInventory() {
       personName,
       conditionOnReturn: conditionOnReturn || null,
       origin: origin || null,
+      cost: cost != null ? cost : null,
       createdAt: serverTimestamp()
     });
 
     // 2. Actualizar el stock y/o condición del producto
     const productRef = doc(db, 'products', productId);
-    const updates: any = {
+    const updates: { stock: ReturnType<typeof increment>; condition?: string } = {
       stock: increment(stockChange)
     };
-    
+
     if (type === 'RETURN' && conditionOnReturn) {
       updates.condition = conditionOnReturn;
     }

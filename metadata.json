@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Sistema Obra",
+  "description": "Sistema de gestión de inventario, movimientos, donaciones e itinerario para obras de construcción.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": ["MAJOR_CAPABILITY_FIRESTORE"]
 }

@@ -10,14 +10,16 @@ interface TransactionModalProps {
   onClose: () => void;
   product: Product | null;
   type: TransactionType;
-  onSave: (productId: string, type: TransactionType, quantity: number, personName: string, condition?: string, origin?: string) => Promise<void>;
+  knownNames: string[];
+  onSave: (productId: string, type: TransactionType, quantity: number, personName: string, condition?: string, origin?: string, cost?: number) => Promise<void>;
 }
 
-export function TransactionModal({ isOpen, onClose, product, type, onSave }: TransactionModalProps) {
+export function TransactionModal({ isOpen, onClose, product, type, knownNames, onSave }: TransactionModalProps) {
   const [quantity, setQuantity] = useState(1);
   const [personName, setPersonName] = useState('');
   const [origin, setOrigin] = useState('Donación');
   const [condition, setCondition] = useState<ProductCondition>('Óptimo');
+  const [cost, setCost] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -28,6 +30,7 @@ export function TransactionModal({ isOpen, onClose, product, type, onSave }: Tra
       setPersonName('');
       setOrigin('Donación');
       setCondition('Óptimo');
+      setCost(0);
       setError('');
     }
   }, [isOpen]);
@@ -65,12 +68,13 @@ export function TransactionModal({ isOpen, onClose, product, type, onSave }: Tra
     setLoading(true);
     try {
       await onSave(
-        product.id, 
-        type, 
-        quantity, 
-        personName, 
+        product.id,
+        type,
+        quantity,
+        personName,
         type === 'RETURN' ? condition : undefined,
-        type === 'IN' ? origin : undefined
+        type === 'IN' ? origin : undefined,
+        type === 'IN' && origin === 'Compra' && cost > 0 ? cost : undefined
       );
       onClose();
     } catch (err: any) {
@@ -107,7 +111,10 @@ export function TransactionModal({ isOpen, onClose, product, type, onSave }: Tra
           <Select 
             label="Motivo de Ingreso" 
             value={origin} 
-            onChange={(e) => setOrigin(e.target.value)}
+            onChange={(e) => {
+              setOrigin(e.target.value);
+              if (e.target.value !== 'Compra') setCost(0);
+            }}
           >
             <option value="Donación">Donación</option>
             <option value="Compra">Compra</option>
@@ -115,14 +122,39 @@ export function TransactionModal({ isOpen, onClose, product, type, onSave }: Tra
             <option value="Otro">Otro</option>
           </Select>
         )}
+
+        {type === 'IN' && origin === 'Compra' && (
+          <Input 
+            label="Costo (S/.)" 
+            type="number" 
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            value={cost} 
+            onChange={(e) => setCost(parseFloat(e.target.value) || 0)}
+          />
+        )}
         
-        <Input 
-          label={getPersonLabel()} 
-          placeholder="Nombre completo" 
-          value={personName} 
-          onChange={(e) => setPersonName(e.target.value)} 
-          required 
-        />
+        <div className="w-full">
+          {personName && (
+            <label className="block text-[10px] font-bold text-[#8E9299] uppercase tracking-widest mb-1">
+              {getPersonLabel()}
+            </label>
+          )}
+          <input
+            list="person-list"
+            placeholder={getPersonLabel()}
+            value={personName}
+            onChange={(e) => setPersonName(e.target.value)}
+            required
+            className="flex w-full rounded-md border border-[#373C42] bg-[#1A1D21] text-white px-3 py-2 text-sm placeholder:text-[#8E9299] focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          />
+          <datalist id="person-list">
+            {knownNames.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
+        </div>
         
         {type === 'RETURN' && (
           <Select 

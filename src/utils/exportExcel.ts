@@ -1,8 +1,10 @@
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
 import { Product, Transaction } from '../types';
 
 export const exportToExcel = async (products: Product[], transactions: Transaction[]) => {
+  // Carga diferida: ExcelJS es pesado y solo se usa al exportar.
+  const ExcelJS = (await import('exceljs')).default;
+  const { saveAs } = await import('file-saver');
+
   const workbook = new ExcelJS.Workbook();
   workbook.creator = 'Sistema Obra';
   workbook.lastModifiedBy = 'Sistema Obra';

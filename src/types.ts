@@ -26,6 +26,7 @@ export interface Transaction {
   personName: string; // Nombre de quién donó, retiró o devolvió
   conditionOnReturn?: string; // Deficiencias al momento de entregar/devolver
   origin?: TransactionOrigin | string; // Reason or source of the transaction
+  cost?: number; // Monto en caso de compra
   createdAt: number;
 }
 

@@ -1,0 +1,17 @@
+{
+  "name": "Sistema Obra",
+  "short_name": "Sistema Obra",
+  "description": "Gestión de inventario, movimientos, donaciones e itinerario para obras.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#212529",
+  "theme_color": "#212529",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
