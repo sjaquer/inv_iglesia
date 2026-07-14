@@ -57,6 +57,7 @@ export const exportToExcel = async (products: Product[], transactions: Transacti
     { header: 'Producto', key: 'product', width: 30 },
     { header: 'Cantidad', key: 'quantity', width: 10 },
     { header: 'Persona', key: 'person', width: 30 },
+    { header: 'Costo', key: 'cost', width: 15 },
     { header: 'Estado (Retorno)', key: 'condition', width: 20 },
   ];
   
@@ -73,6 +74,7 @@ export const exportToExcel = async (products: Product[], transactions: Transacti
       product: product?.name || 'Desconocido',
       quantity: t.quantity,
       person: t.personName,
+      cost: t.type === 'IN' && t.origin === 'Compra' && t.cost ? t.cost.toFixed(2) : '-',
       condition: t.conditionOnReturn || '-'
     });
   });

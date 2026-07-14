@@ -7,6 +7,9 @@ interface HistoryViewProps {
 }
 
 export function HistoryView({ products, transactions }: HistoryViewProps) {
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN', minimumFractionDigits: 2 }).format(amount);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden space-y-4">
       <div className="shrink-0">
@@ -25,12 +28,13 @@ export function HistoryView({ products, transactions }: HistoryViewProps) {
                 <th className="px-6 py-4 text-center">Cant.</th>
                 <th className="px-6 py-4">Persona</th>
                 <th className="px-6 py-4">Notas / Origen</th>
+                <th className="px-6 py-4 text-right">Costo</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#373C42] text-[#E5E7EB]">
               {transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-[#8E9299]">
+                  <td colSpan={7} className="px-6 py-8 text-center text-[#8E9299]">
                     No hay movimientos registrados
                   </td>
                 </tr>
@@ -53,6 +57,13 @@ export function HistoryView({ products, transactions }: HistoryViewProps) {
                         {tx.type === 'IN' && tx.origin ? tx.origin : ''}
                         {tx.type === 'RETURN' && tx.conditionOnReturn ? tx.conditionOnReturn : ''}
                         {(!tx.origin && !tx.conditionOnReturn) && '-'}
+                      </td>
+                      <td className="px-6 py-4 text-right text-xs font-mono">
+                        {tx.type === 'IN' && tx.origin === 'Compra' && tx.cost != null && tx.cost > 0 ? (
+                          <span className="text-orange-400 font-bold">{formatCurrency(tx.cost)}</span>
+                        ) : (
+                          <span className="text-[#4B5563]">—</span>
+                        )}
                       </td>
                     </tr>
                   );

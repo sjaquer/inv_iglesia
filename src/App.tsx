@@ -1,10 +1,6 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useInventory } from './hooks/useInventory';
+import { useItinerary } from './hooks/useItinerary';
 import { InventoryTable } from './components/InventoryTable';
 import { ProductModal } from './components/ProductModal';
 import { TransactionModal } from './components/TransactionModal';
@@ -21,6 +17,7 @@ import { exportToExcel } from './utils/exportExcel';
 
 export default function App() {
   const { products, transactions, loading, error, addProduct, registerTransaction } = useInventory();
+  const { workers } = useItinerary();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -36,6 +33,18 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'inventory' | 'history' | 'donors' | 'itinerary'>('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  const knownNames = useMemo(() => {
+    const names = new Set<string>();
+    workers.forEach(w => names.add(w.name));
+    transactions.forEach(t => { if (t.personName) names.add(t.personName); });
+    return Array.from(names).sort();
+  }, [workers, transactions]);
+
+  const uniqueDonorsCount = useMemo(() => 
+    new Set(transactions.filter(t => t.type === 'IN' && (t.origin === 'Donación' || !t.origin)).map(d => d.personName)).size,
+    [transactions]
+  );
 
   const handleTransaction = (product: Product, type: TransactionType) => {
     setTransactionModalData({ isOpen: true, product, type });
@@ -99,7 +108,7 @@ export default function App() {
                 <DashboardView 
                   products={products} 
                   transactions={transactions} 
-                  uniqueDonorsCount={Array.from(new Set(transactions.filter(t => t.type === 'IN' && (t.origin === 'Donación' || !t.origin)).map(d => d.personName))).length}
+                  uniqueDonorsCount={uniqueDonorsCount}
                 />
               )}
               
@@ -135,7 +144,7 @@ export default function App() {
               )}
               
               {activeTab === 'donors' && (
-                <DonorsView transactions={transactions} />
+                <DonorsView transactions={transactions} workers={workers} />
               )}
               
               {activeTab === 'itinerary' && (
@@ -160,7 +169,8 @@ export default function App() {
         onClose={closeTransactionModal} 
         product={transactionModalData.product} 
         type={transactionModalData.type} 
-        onSave={registerTransaction} 
+        onSave={registerTransaction}
+        knownNames={knownNames}
       />
     </div>
   );
