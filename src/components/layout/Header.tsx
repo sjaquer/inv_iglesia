@@ -54,7 +54,7 @@ export function Header({
       </div>
 
       <div className="flex items-center sm:hidden">
-        <h1 className="text-lg font-bold tracking-tighter text-white">SISTEMA OBRA</h1>
+        <h1 className="text-lg font-bold tracking-tighter text-white">CENTRO DE ADORACIÓN</h1>
       </div>
 
       <div className="flex gap-3 sm:gap-4 items-center">

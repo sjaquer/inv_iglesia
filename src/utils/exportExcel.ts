@@ -6,8 +6,8 @@ export const exportToExcel = async (products: Product[], transactions: Transacti
   const { saveAs } = await import('file-saver');
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Sistema Obra';
-  workbook.lastModifiedBy = 'Sistema Obra';
+  workbook.creator = 'Centro de Adoración';
+  workbook.lastModifiedBy = 'Centro de Adoración';
   workbook.created = new Date();
   
   // Sheet 1: Inventario
@@ -81,5 +81,5 @@ export const exportToExcel = async (products: Product[], transactions: Transacti
   
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  saveAs(blob, `Inventario_Sistema_Obra_${new Date().toISOString().slice(0,10)}.xlsx`);
+  saveAs(blob, `Inventario_Centro_Adoracion_${new Date().toISOString().slice(0,10)}.xlsx`);
 };

@@ -1,6 +1,6 @@
 {
-  "name": "Sistema Obra",
-  "description": "Sistema de gestión de inventario, movimientos, donaciones e itinerario para obras de construcción.",
+  "name": "Centro de Adoración",
+  "description": "Gestión de inventario, movimientos, donaciones e itinerario para el Centro de Adoración (Misión Posible CNC).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_FIRESTORE"]
 }

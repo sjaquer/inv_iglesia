@@ -23,14 +23,14 @@ export function Sidebar({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }
         {!isCollapsed ? (
           <div>
             <h1 className="text-xl font-bold tracking-tighter text-white flex items-center gap-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-sm flex items-center justify-center text-xs shrink-0 font-extrabold">SO</div>
-              <span className="truncate">SISTEMA OBRA</span>
+              <div className="w-8 h-8 bg-orange-500 rounded-sm flex items-center justify-center text-xs shrink-0 font-extrabold">CA</div>
+              <span className="truncate">CENTRO DE ADORACIÓN</span>
             </h1>
-            <p className="text-[10px] text-[#8E9299] mt-1 uppercase tracking-[0.2em]">Gestión de Inventario</p>
+            <p className="text-[10px] text-[#8E9299] mt-1 uppercase tracking-[0.2em]">Misión Posible - CNC</p>
           </div>
         ) : (
-          <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-sm font-extrabold text-white shadow-lg shadow-orange-500/20" title="Sistema Obra">
-            SO
+          <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-sm font-extrabold text-white shadow-lg shadow-orange-500/20" title="Centro de Adoración">
+            CA
           </div>
         )}
       </div>
