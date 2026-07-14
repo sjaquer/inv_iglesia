@@ -18,7 +18,7 @@ service cloud.firestore {
                     && request.resource.data.quantity is number
                     && request.resource.data.quantity >= 1
                     && (request.resource.data.type == 'IN' || request.resource.data.type == 'OUT' || request.resource.data.type == 'RETURN')
-                    && (!('cost' in request.resource.data) || request.resource.data.cost is number);
+                    && (!('cost' in request.resource.data) || request.resource.data.cost == null || request.resource.data.cost is number);
       allow update, delete: if false;
     }
 
