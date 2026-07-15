@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './ui/Modal';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { Button } from './ui/Button';
-import { Category, ProductCondition } from '../types';
+import { Category, ProductCondition, Product } from '../types';
 
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { code: string; name: string; description: string; category: Category; condition: string; stock: number; }) => Promise<void>;
+  onSave: (data: { id?: string; code: string; name: string; description: string; category: Category; condition: string; stock: number }) => Promise<void>;
+  product?: Product | null;
 }
 
-export function ProductModal({ isOpen, onClose, onSave }: ProductModalProps) {
+export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -20,6 +21,29 @@ export function ProductModal({ isOpen, onClose, onSave }: ProductModalProps) {
   const [stock, setStock] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const isEditing = !!product;
+
+  useEffect(() => {
+    if (isOpen) {
+      if (product) {
+        setCode(product.code);
+        setName(product.name);
+        setDescription(product.description);
+        setCategory(product.category as Category);
+        setCondition((product.condition as ProductCondition) || 'Óptimo');
+        setStock(product.stock);
+      } else {
+        setCode('');
+        setName('');
+        setDescription('');
+        setCategory('Herramientas');
+        setCondition('Óptimo');
+        setStock(0);
+      }
+      setError('');
+    }
+  }, [isOpen, product]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,14 +54,13 @@ export function ProductModal({ isOpen, onClose, onSave }: ProductModalProps) {
     
     setLoading(true);
     try {
-      await onSave({ code, name, description, category, condition, stock });
-      // Reset form
-      setCode('');
-      setName('');
-      setDescription('');
-      setCategory('Herramientas');
-      setCondition('Óptimo');
-      setStock(0);
+      const data: { id?: string; code: string; name: string; description: string; category: Category; condition: string; stock: number } = {
+        code, name, description, category, condition, stock
+      };
+      if (isEditing) {
+        data.id = product!.id;
+      }
+      await onSave(data);
       onClose();
     } catch (err: any) {
       setError(err.message || 'Error al guardar el producto.');
@@ -47,7 +70,7 @@ export function ProductModal({ isOpen, onClose, onSave }: ProductModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Nuevo Producto">
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Editar Producto" : "Nuevo Producto"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
         
@@ -60,14 +83,16 @@ export function ProductModal({ isOpen, onClose, onSave }: ProductModalProps) {
             required 
             autoFocus
           />
-          <Input 
-            label="Stock Inicial" 
-            type="number" 
-            min="0"
-            value={stock} 
-            onChange={(e) => setStock(parseInt(e.target.value) || 0)} 
-            required 
-          />
+          {!isEditing && (
+            <Input 
+              label="Stock Inicial" 
+              type="number" 
+              min="0"
+              value={stock} 
+              onChange={(e) => setStock(parseInt(e.target.value) || 0)} 
+              required 
+            />
+          )}
         </div>
         
         <Input 
@@ -115,7 +140,7 @@ export function ProductModal({ isOpen, onClose, onSave }: ProductModalProps) {
             Cancelar
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? 'Guardando...' : 'Guardar Producto'}
+            {loading ? 'Guardando...' : isEditing ? 'Actualizar Producto' : 'Guardar Producto'}
           </Button>
         </div>
       </form>

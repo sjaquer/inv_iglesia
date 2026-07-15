@@ -2,14 +2,15 @@ import React from 'react';
 import { Product, TransactionType } from '../types';
 import { Button } from './ui/Button';
 import { getCategoryColor, cn } from '../lib/utils';
-import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, AlertCircle } from 'lucide-react';
+import { ArrowDownToLine, ArrowUpFromLine, RefreshCw, AlertCircle, Pencil } from 'lucide-react';
 
 interface InventoryTableProps {
   products: Product[];
   onTransaction: (product: Product, type: TransactionType) => void;
+  onEdit: (product: Product) => void;
 }
 
-export function InventoryTable({ products, onTransaction }: InventoryTableProps) {
+export function InventoryTable({ products, onTransaction, onEdit }: InventoryTableProps) {
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 bg-[#2C3136] rounded-xl border border-[#373C42] shadow-2xl flex-1">
@@ -76,6 +77,14 @@ export function InventoryTable({ products, onTransaction }: InventoryTableProps)
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center justify-end gap-3 text-right">
+                    <button 
+                      className="text-[10px] text-yellow-400 font-bold hover:underline uppercase flex items-center gap-1"
+                      title="Editar producto"
+                      onClick={() => onEdit(product)}
+                    >
+                      <Pencil size={12} />
+                      <span className="hidden sm:inline">Editar</span>
+                    </button>
                     <button 
                       className="text-[10px] text-green-400 font-bold hover:underline uppercase flex items-center gap-1"
                       title="Entrada (Ingreso)"

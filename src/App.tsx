@@ -4,7 +4,7 @@ import { useItinerary } from './hooks/useItinerary';
 import { InventoryTable } from './components/InventoryTable';
 import { ProductModal } from './components/ProductModal';
 import { TransactionModal } from './components/TransactionModal';
-import { Product, TransactionType } from './types';
+import { Product, TransactionType, Category } from './types';
 import { AlertTriangle, Search } from 'lucide-react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
@@ -16,11 +16,12 @@ import { ItineraryView } from './components/views/ItineraryView';
 import { exportToExcel } from './utils/exportExcel';
 
 export default function App() {
-  const { products, transactions, loading, error, addProduct, registerTransaction } = useInventory();
+  const { products, transactions, loading, error, addProduct, updateProduct, registerTransaction } = useInventory();
   const { workers } = useItinerary();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [transactionModalData, setTransactionModalData] = useState<{
     isOpen: boolean;
     product: Product | null;
@@ -48,6 +49,38 @@ export default function App() {
 
   const handleTransaction = (product: Product, type: TransactionType) => {
     setTransactionModalData({ isOpen: true, product, type });
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const handleSaveProduct = async (data: { id?: string; code: string; name: string; description: string; category: Category; condition: string; stock: number }) => {
+    if (data.id) {
+      await updateProduct(data.id, {
+        code: data.code,
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        condition: data.condition,
+        stock: data.stock,
+      });
+    } else {
+      await addProduct({
+        code: data.code,
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        condition: data.condition,
+        stock: data.stock,
+      });
+    }
+  };
+
+  const closeProductModal = () => {
+    setIsProductModalOpen(false);
+    setEditingProduct(null);
   };
 
   const closeTransactionModal = () => {
@@ -134,7 +167,8 @@ export default function App() {
                       p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                       p.code.toLowerCase().includes(searchQuery.toLowerCase())
                     )} 
-                    onTransaction={handleTransaction} 
+                    onTransaction={handleTransaction}
+                    onEdit={handleEditProduct}
                   />
                 </div>
               )}
@@ -160,8 +194,9 @@ export default function App() {
       {/* Modals */}
       <ProductModal 
         isOpen={isProductModalOpen} 
-        onClose={() => setIsProductModalOpen(false)} 
-        onSave={addProduct} 
+        onClose={closeProductModal} 
+        onSave={handleSaveProduct}
+        product={editingProduct}
       />
       
       <TransactionModal 

@@ -11,7 +11,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Product, Transaction, TransactionType } from '../types';
+import { Product, Transaction, TransactionType, Category } from '../types';
 
 export function useInventory() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -111,12 +111,26 @@ export function useInventory() {
     await updateDoc(productRef, updates);
   };
 
+  const updateProduct = async (productId: string, productData: {
+    code: string;
+    name: string;
+    description: string;
+    category: Category;
+    condition: string;
+    stock: number;
+  }) => {
+    if (!db) throw new Error("Base de datos no inicializada");
+    const productRef = doc(db, 'products', productId);
+    await updateDoc(productRef, productData);
+  };
+
   return {
     products,
     transactions,
     loading,
     error,
     addProduct,
+    updateProduct,
     registerTransaction
   };
 }
